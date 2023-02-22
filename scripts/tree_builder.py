@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-graph_builder.py
+tree_builder.py
+An attempt to map the MV Professor feeder using a depth-first tree traversal
 
+@author: brmurray
 """
 
-#%%
 import numpy as np
 from numpy.random import default_rng
 import pandas as pd
@@ -17,8 +18,9 @@ from shapely.geometry import Point
 import geographiclib # https://geographiclib.sourceforge.io/Python/doc/geodesics.html
 from geographiclib.geodesic import Geodesic
 
+from mvprofessor.config import gdf_pkl_path
 
-gdf = pd.read_pickle("professor.pkl")
+gdf = pd.read_pickle(gdf_pkl_path)
 
 sid1 = 18619198
 sid2 = 172773681
@@ -30,9 +32,26 @@ sid7 = 18619559
 subsect = [sid1,sid2,sid3,sid4,sid5,sid6,sid7]
 
 
-#%% 
+#%% Depth-First Tree Traversal
+# This block is an attempt to map the entire Professor feeder
+# using a variation of the Depth-First Search (DFS) tree travesal
+# In DFS, for a given node, we find connected nodes and follow each to its
+# leaf (terminal) node before returning to the current node and doing the same
+# for the next neighbor
+
+# In this implementation, each node is added as a node in a NetworkX graph
+# structure. Hopefully, this will faciliate later restructuring of the MV grid.
+
+# As of Feb. 22, this algorithm doesn't work! It does not capture every edge, 
+# and also fails to handle islanded segments (which are sufficiently far from 
+# any neighbors)
+
+
 # Simplified test case with just 4 segments
-gdf2 = gdf.loc[gdf['section_id'].isin(subsect[:7])].copy()
+#gdf2 = gdf.loc[gdf['section_id'].isin(subsect[:5])].copy()
+
+# full 236 segment dataset
+gdf2 = gdf.copy()
 gdf2['explored'] = 0
 
 # Initiate graph
@@ -53,11 +72,9 @@ while len(frontier)>0:
     current_node = frontier.pop(-1)
     
     # Buffer the current point and find connecting segments
-    buff0 = G.nodes[current_node]['point'].buffer(20)
+    buff0 = G.nodes[current_node]['point'].buffer(40)
     branches = gdf2.loc[gdf2.intersects(buff0,align=True)] # returns a dataframe
     branches = branches[branches.explored !=1]
-    
-    # mark these branches as visited in gdf2?
     
     # Each segment (linestring) has exactly two endpoints (boundaries)
     # Find which endpoint is within the buffer, and which is the next node
@@ -90,34 +107,3 @@ while len(frontier)>0:
     # Once we've mapped all the edge of the current node,
     # add it to the explored list so we don't visit it again
     explored.append(current_node)
-    
-#%%
-#enodes = [(x,y) for i,x,y in enumerate(G.nodes.data()[i]['point'].coords[0])]
-pos = nx.get_node_attributes(G,'pos')
-x,y = list(zip(*list(pos.values())))
-
-fig,ax = plt.subplots()
-gdf2.plot(ax=ax)
-gdf2.boundary.plot(ax=ax,c='r')
-plt.scatter(x,y,axes=ax,c='c')
-plt.show()
-
-#%%
-#pos=[nx.get_node_attributes(G,'point').values()]
-pos = nx.get_node_attributes(G,'pos')
-nx.draw(G, pos, with_labels=True, font_weight='bold')  
-
-
-#%%
-pos=nx.spring_layout(G)
-edge_labels = dict([((n1,n2),d['section_id']) for n1,n2,d in G.edges(data=True)])
-
-
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, label_pos=0.1,
-                             font_color='red', font_size=8, font_weight='bold')
-    
-
-#%%
-
-
-    

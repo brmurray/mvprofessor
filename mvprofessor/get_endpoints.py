@@ -13,7 +13,9 @@ import matplotlib.pyplot as plt
 import geopandas
 from shapely.geometry import Point
 
-gdf = pd.read_pickle("professor.pkl")
+from mvprofessor.config import gdf_pkl_path
+
+gdf = pd.read_pickle(gdf_pkl_path)
 
 #%% Block: Get all start/end points from LineStrings
 
@@ -31,10 +33,10 @@ epts = gdf.copy()
 spts['geometry'] = [Point(y[0]) for y in gdf.apply(lambda x: [y for y in x['geometry'].coords],axis=1)]
 epts['geometry'] = [Point(y[-1]) for y in gdf.apply(lambda x: [y for y in x['geometry'].coords],axis=1)]
 
-zm=spts.explore(color='green',marker_kwds=dict(radius=3))
-epts.explore(m=zm,color='red',marker_kwds=dict(radius=3))
+zm=spts.explore(color='green',marker_kwds=dict(radius=4))
+epts.explore(m=zm,color='red',marker_kwds=dict(radius=2.5))
 gdf.explore(m=zm,column='randc',cmap='gist_rainbow')
-zm.save('zpoints.html')
+zm.save('endpoints.html')
 
 # concatenate the startpoints and endpoints into a single dataframe
 pts = pd.concat([spts,epts],ignore_index=True)
