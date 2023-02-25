@@ -5,11 +5,12 @@ of a medium voltage (16kV) feeder circuit from GIS latitude/longitude data provi
 Edison's Distribution Resources Plan External Portal (DRPEP). In other words, this package seeks to transform
 geographic topology into electrical topology.
 
-Why make an electrical connectivity model? 
+===Why make an electrical connectivity model?=== 
 The electrical topology is required to model the circuit's electrical behavior. Ultimately this electrical model
 will be converted to EPRI's Common Information Model (CIM), for import into electrical solvers like OpenDSS.
 
-Why do this programmatically?
+===Why do this programmatically?===
+
 For a single circuit, it would be easier to have a human "click and connect" the MV lines to their obvious neighbors.
 
 1) Unfortunately, no such software is readily available. I could write a GUI to aid this task, but the time 
