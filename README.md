@@ -26,5 +26,7 @@ or because data is updated), the CIM can be quickly regenerated.
 (in the mathematical sense) using NetworkX, which has a powerful engine for reconfiguring networks. For instance, it should be
 to model the effects of a constrained line or identify bottlenecks which degrade hosting capacity.
 
+===
 SoCalEdison's DRPEP: https://drpep.sce.com/drpep/
+
 Common Information Model: https://site.ieee.org/pes-enews/2015/12/10/a-brief-history-the-common-information-model/
