@@ -6,13 +6,15 @@ Edison's Distribution Resources Plan External Portal (DRPEP). In other words, th
 geographic topology into electrical topology.
 
 
-===Why make an electrical connectivity model?===
+Why make an electrical connectivity model?
+__________________________________________
 
 The electrical topology is required to model the circuit's electrical behavior. Ultimately this electrical model
 will be converted to EPRI's Common Information Model (CIM), for import into electrical solvers like OpenDSS.
 
 
-===Why do this programmatically?===
+Why do this programmatically?
+_____________________________
 
 For a single circuit, it would be easier to have a human "click and connect" the MV lines to their obvious neighbors.
 
@@ -26,7 +28,8 @@ or because data is updated), the CIM can be quickly regenerated.
 (in the mathematical sense) using NetworkX, which has a powerful engine for reconfiguring networks. For instance, it should be
 to model the effects of a constrained line or identify bottlenecks which degrade hosting capacity.
 
-===
+-----------------
+
 SoCalEdison's DRPEP: https://drpep.sce.com/drpep/
 
 Common Information Model: https://site.ieee.org/pes-enews/2015/12/10/a-brief-history-the-common-information-model/
