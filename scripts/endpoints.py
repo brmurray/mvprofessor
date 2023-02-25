@@ -13,16 +13,11 @@ import matplotlib.pyplot as plt
 import geopandas
 from shapely.geometry import Point
 
-from mvprofessor.config import gdf_pkl_path
+from mvprofessor.config import int_data_dir
 
-gdf = pd.read_pickle(gdf_pkl_path)
+gdf = pd.read_pickle(int_data_dir/'professor.pkl')
 
 #%% Block: Get all start/end points from LineStrings
-
-# This is 2 nested list comprehensions
-# inner comp. [y for y in x['geometry'].coords] returns ALL points along each linestring
-# outer comp [Point(y[0] for y in gdf.apply())] makes a list of each *start* point
-z = [Point(y[0]) for y in gdf.apply(lambda x: [y for y in x['geometry'].coords],axis=1)]
 
 spts = gdf.copy()
 epts = gdf.copy()
@@ -42,3 +37,4 @@ zm.save('endpoints.html')
 pts = pd.concat([spts,epts],ignore_index=True)
 
 
+pts.to_pickle(int_data_dir/'endpoints.pkl')

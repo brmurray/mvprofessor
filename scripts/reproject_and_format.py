@@ -21,17 +21,15 @@ from mvprofessor.config import raw_data_path, gdf_pkl_path
 #%%
 gdf = geopandas.read_file(raw_data_path)
 
-gdf.set_index('section_id')
+gdf=gdf.set_index('section_id')
 
 # retain only columns which change (others cols are the same for every row)
-gdf=gdf[["section_id","SHAPE__Length","objectid","node_id","geometry"]]
+gdf=gdf[["SHAPE__Length","objectid","node_id","geometry"]]
 
 # add random number to make each LineString a different color when mapping
 rng = default_rng()
 gdf.loc[:,'randc'] = rng.choice(236*5,size=236,replace=False)
 
-# save to pickle (*.pkl) for easier access
-gdf.to_pickle(gdf_pkl_path)
 
 #%% Calculate the distance error introduced from re-projection
 # Within WGS84 CRS, calculate geodesic (shortest path along ellipse)
@@ -56,3 +54,5 @@ diag_11N = np.sqrt((bounds_UTM11[2]-bounds_UTM11[0])**2
 
 bounds_error = diag_11N/diag_ellipse # 11.5m over 3km, ~0.36%
 
+# save to pickle (*.pkl) for easier access
+gdf.to_pickle(gdf_pkl_path)
