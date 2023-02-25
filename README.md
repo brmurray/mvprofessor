@@ -21,7 +21,7 @@ For a single circuit, it would be easier to have a human "click and connect" the
 investment may be even greater than the rough programatic approach.
 
 2) A semi-automated processing pipeline from GIS -> CIM means that whenever the network topology changes (in the real world,
-or because data is updated), the CIM can be quickly regenerated.
+or because data is updated), the CIM can be quickly regenerated. Any other circuit can also be fed into this pipeline.
 
 3) Most importantly, this regeneration capability enables broader analysis. The electrical model is saved as a "Graph" 
 (in the mathematical sense) using NetworkX, which has a powerful engine for reconfiguring networks. For instance, it should be
