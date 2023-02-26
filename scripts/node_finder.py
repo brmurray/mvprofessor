@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-graph_builder.py
+Node_Finder.py
+
+Attempt to identify electrical nodes from a collection of
+geographic coordinates of a MV feeder.
+
 
 """
 
@@ -14,7 +18,6 @@ import networkx as nx
 import geopandas
 import folium
 from shapely.geometry import Point
-
 from geographiclib.geodesic import Geodesic
 
 from mvprofessor.config import int_data_dir
@@ -27,12 +30,11 @@ gdf = pd.read_pickle(int_data_dir/'professor.pkl')
 gdf = gdf[gdf['SHAPE__Length'] > 50] #with cutoff=20, len(gdf)=197
 
 blobs = pd.read_pickle(int_data_dir/'blobs.pkl')
+poi = pd.read_pickle(int_data_dir/'PoI_Professor.pkl')
 
 
-#%% Find the root node
-poi = pd.read_pickle(int_data_dir/'PoI_Professor.pkl') #returns a gdf of Points
-    
-isla_vista = poi.loc[poi['PoI']=='Isla_Vista_Substation']['geometry']
+#%% Find the root node    
+isla_vista = poi.loc[poi['PoI']=='isla_vista_ss']['geometry']
 isla_vista = isla_vista.iloc[0]
 
 blob0 = blobs.sindex.nearest(isla_vista)[1][0] #index to nearest blob from IVSS
@@ -108,9 +110,13 @@ enode_pts = geopandas.GeoSeries.from_xy(x,y,crs="EPSG:2955")
 enodes = geopandas.GeoDataFrame({'enode_id':enode_id},geometry=enode_pts,crs="EPSG:2955")
 
 #%% Plot the DRPEP lines, blobs, and electrical nodes
-m = gdf.explore(column='randc',cmap='gist_rainbow',legend=False,name="DRPEP Line Sections")
-blobs.explore(m=m,marker_kwds=dict(fill=False),name="Blobs (initial guess nodes")
-enodes.explore(m=m,color='red',marker_kwds=dict(radius=5),name="derived Electrical nodes")
-
+m = gdf.explore(column='randc',cmap='gist_rainbow',legend=False,
+                name="DRPEP Line Sections")
+blobs.explore(m=m,color='green',marker_type='circle',
+              style_kwds=dict(fillOpacity=0.2),
+              name="Blobs (initial guess nodes)")
+enodes.explore(m=m,color='red',marker_kwds=dict(radius=5),
+               name="Electrical nodes (programmatic)")
+poi.explore(m=m,color='green',marker_type='marker',name="Points of Interest")
 folium.LayerControl().add_to(m)
 m.save('enodes.html')
