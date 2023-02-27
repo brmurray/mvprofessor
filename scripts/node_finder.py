@@ -65,38 +65,53 @@ while len(frontier)>0:
     # Find segments which connect to the current blob
     blob = G.nodes[current_node]['blob']
     branches = gdf.loc[gdf.intersects(blob,align=True)] # returns a dataframe
-    branches = branches[branches.explored !=1]  # branches connect to current blob
+    branches = branches[branches.explored !=1]  
     
         
     # Each branch (linestring) has exactly two endpoints (boundaries)
     # Find which endpoint is within the buffer, and which is the next node
     for idx,branch in branches.iterrows():
         
-        #endblobs = blobs.sjoin(branches,how='inner',predicate='intersects')
-        endblobs = blobs[blobs.intersects(branch['geometry'])]
+        pt0 = Point(branch.geometry.coords[0])
+        pt1 = Point(branch.geometry.coords[-1])
         
-        # if len(endblobs)==1, the branch starts and ends at the same blob
-        # We're only interested in branches that connect to a new blob
-        # (in graph theory language, edges which lead to a new node)
-        if len(endblobs)>1: 
-            new_blob = endblobs[endblobs.index!=current_node]
-                        
-            # Add the new node to the graph and to the frontier
-            G.add_node(new_blob.index[0], 
-                       pos=(new_blob.representative_point().iloc[0].coords[0]),
-                       blob=new_blob.iloc[0]['geometry'])
-            frontier.append(new_blob.index[0]) # we'll revisit this point later
-            
-            # Add the edge from first node to new node
-            # The entire branch (pd.Series) is added to the node
-            # All the branch elements are also added for easy access later
-            G.add_edge(current_node,new_blob.index[0],weight=branch.SHAPE__Length,
-                           length=branch.SHAPE__Length,
-                           section_id=branch.name,
-                           objectid=branch.objectid,
-                           node_id=branch.node_id,
-                           geometry=branch.geometry,
-                           branch=branch)
+        if blob.covers(pt0):
+            new_point = pt1
+        else:
+            new_point = pt0
+        
+        #endblobs = blobs.sjoin(branches,how='inner',predicate='intersects')
+        #endblobs = blobs[blobs.intersects(branch['geometry'])]
+        new_blob = blobs[blobs.covers(new_point)]
+        
+        # # if len(endblobs)==1, the branch starts and ends at the same blob
+        # # We're only interested in branches that connect to a new blob
+        # # (in graph theory language, edges which lead to a new node)
+        # if len(endblobs)==3:
+        #     endblobs.head()
+        # #print(len(endblobs))
+        
+        # if len(endblobs)>1: 
+        #     new_blob = endblobs[endblobs.index!=current_node]
+            #new_blob = endblobs.iloc[-1]
+        #---------
+                
+        # Add the new node to the graph and to the frontier
+        G.add_node(new_blob.index[0], 
+                   pos=(new_blob.representative_point().iloc[0].coords[0]),
+                   blob=new_blob.iloc[0]['geometry'])
+        frontier.append(new_blob.index[0]) # we'll revisit this point later
+        
+        # Add the edge from first node to new node
+        # The entire branch (pd.Series) is added to the node
+        # All the branch elements are also added for easy access later
+        G.add_edge(current_node,new_blob.index[0],weight=branch.SHAPE__Length,
+                       length=branch.SHAPE__Length,
+                       section_id=branch.name,
+                       objectid=branch.objectid,
+                       node_id=branch.node_id,
+                       geometry=branch.geometry,
+                       branch=branch)
         
         # Note which branches have been mapped, so as not repeat them
         gdf.loc[idx,'explored'] = 1
