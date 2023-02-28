@@ -21,15 +21,15 @@ from shapely.geometry import Point
 from geographiclib.geodesic import Geodesic
 
 from mvprofessor.config import int_data_dir
-from mvprofessor.custom_funcs import get_endpoints
+from mvprofessor.custom_funcs import get_endpoints, make_blobs
 
 
 gdf = pd.read_pickle(int_data_dir/'professor.pkl')
 
 # exclude tiniest linestrings from geodataframe
 gdf = gdf[gdf['SHAPE__Length'] > 50] #with cutoff=20, len(gdf)=197
-
-blobs = pd.read_pickle(int_data_dir/'blobs.pkl')
+pts = get_endpoints(gdf)
+blobs = make_blobs(pts,6)
 poi = pd.read_pickle(int_data_dir/'PoI_Professor.pkl')
 
 
@@ -80,21 +80,7 @@ while len(frontier)>0:
         else:
             new_point = pt0
         
-        #endblobs = blobs.sjoin(branches,how='inner',predicate='intersects')
-        #endblobs = blobs[blobs.intersects(branch['geometry'])]
         new_blob = blobs[blobs.covers(new_point)]
-        
-        # # if len(endblobs)==1, the branch starts and ends at the same blob
-        # # We're only interested in branches that connect to a new blob
-        # # (in graph theory language, edges which lead to a new node)
-        # if len(endblobs)==3:
-        #     endblobs.head()
-        # #print(len(endblobs))
-        
-        # if len(endblobs)>1: 
-        #     new_blob = endblobs[endblobs.index!=current_node]
-            #new_blob = endblobs.iloc[-1]
-        #---------
                 
         # Add the new node to the graph and to the frontier
         G.add_node(new_blob.index[0], 
@@ -132,6 +118,8 @@ blobs.explore(m=m,color='green',marker_type='circle',
               name="Blobs (initial guess nodes)")
 enodes.explore(m=m,color='red',marker_kwds=dict(radius=5),
                name="Electrical nodes (programmatic)")
+pts.explore(m=m,color='blue',marker_kwds=dict(radius=2),
+               name="LineString endpoints")
 poi.explore(m=m,color='green',marker_type='marker',name="Points of Interest")
 folium.LayerControl().add_to(m)
 m.save('enodes.html')

@@ -28,7 +28,7 @@ gdf = pd.read_pickle(int_data_dir/'professor.pkl')
 # quick look at the distribution of line lengths
 #plt.hist(gdf['SHAPE__Length'],bins=np.arange(0,3000,20))  
 
-buffer_radius = 18 #meters
+buffer_radius = 20 #meters
 
 gdf = gdf[gdf['SHAPE__Length'] > (0.9*2*buffer_radius)]
 pts = get_endpoints(gdf)
@@ -38,7 +38,7 @@ halos = pts.copy()
 halos['geometry'] = halos['geometry'].buffer(buffer_radius)
 
 # option 1
-# Find intersectionsd between the halos
+# Find intersections between the halos
 intersects = halos.sjoin(halos, how="left", predicate="intersects")
 
 # dissolve intersections on right index indices using the minimum value
