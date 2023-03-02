@@ -16,15 +16,19 @@ from shapely.geometry import Point
 from geographiclib.geodesic import Geodesic
 
 # Custom components
-from mvprofessor.config import raw_data_path, gdf_pkl_path
+from mvprofessor.config import raw_data_dir, int_data_dir
 
 #%%
-gdf = geopandas.read_file(raw_data_path)
+#gdf = geopandas.read_file(raw_data_dir / 'professor.geojson')
+gdf = geopandas.read_file(raw_data_dir / 'ICA_Layer.geojson')
+
 
 gdf=gdf.set_index('section_id')
 
 # retain only columns which change (others cols are the same for every row)
 gdf=gdf[["SHAPE__Length","objectid","node_id","geometry"]]
+
+gdf['node_id'] =gdf['node_id'].apply(lambda x: int(x))
 
 # add random number to make each LineString a different color when mapping
 rng = default_rng()
@@ -55,4 +59,4 @@ diag_11N = np.sqrt((bounds_UTM11[2]-bounds_UTM11[0])**2
 bounds_error = diag_11N/diag_ellipse # 11.5m over 3km, ~0.36%
 
 # save to pickle (*.pkl) for easier access
-gdf.to_pickle(gdf_pkl_path)
+gdf.to_pickle(int_data_dir / 'professor.pkl')
