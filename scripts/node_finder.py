@@ -151,23 +151,34 @@ for i,Si in enumerate(S):
     enodes.loc[enodes.index.isin(list(Si.nodes)),'subgraph']=i
     enodes.loc[enodes.index.isin(list(Si.nodes)),'randc']=r[i]
     
+# save to pickle (*.pkl) for easier access
+enodes.to_pickle(int_data_dir / 'enodes.pkl')
 
 #%% Plot the DRPEP lines, blobs, and electrical nodes
 # m = gdf.explore(column='randc',cmap='gist_rainbow',legend=False,
 #                 name="DRPEP Line Sections")
-m=gdf.explore(name="DRPEP Line Sections")
+# Step 0: Note some important Places of Interest
+m = poi.explore(color='green',marker_type='marker',
+                name="Step 0: Note Points of Interest")
+
+# Step 1: Show DRPEP Line Segments
+gdf.explore(m=m,name="Step 1: DRPEP Line Sections")
+
+# Step 2: Find Endpoints
+pts.explore(m=m,color='blue',marker_kwds=dict(radius=2),show=False,
+               name="Step 2: LineString endpoints")
+
 blobs.explore(m=m,color='green',marker_type='circle',
               style_kwds=dict(fillOpacity=0.2),show=False,
-              
-              name="Blobs (initial guess nodes)")
+              name="Step 3: Combine very-near endpoints into 'blobs'")
+
+# Step 4: Infer Electrical Nodes
 enodes.explore(m=m,column='randc',cmap='prism',marker_kwds=dict(radius=7),
                 legend=False,style_kwds=dict(fillOpacity=1.0),
-                name="Electrical Nodes (colored by sub-network)")
-pts.explore(m=m,color='blue',marker_kwds=dict(radius=2),show=False,
-               name="LineString endpoints")
-poi.explore(m=m,color='green',marker_type='marker',name="Points of Interest")
+                name="Step 4: Infer Electrical Nodes (colored by sub-network)")
+
 folium.LayerControl().add_to(m)
-m.save('enodes.html')
+m.save('Map_Steps.html')
 
 
 

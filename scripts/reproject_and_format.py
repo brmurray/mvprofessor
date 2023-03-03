@@ -19,9 +19,7 @@ from geographiclib.geodesic import Geodesic
 from mvprofessor.config import raw_data_dir, int_data_dir
 
 #%%
-#gdf = geopandas.read_file(raw_data_dir / 'professor.geojson')
-gdf = geopandas.read_file(raw_data_dir / 'ICA_Layer.geojson')
-
+gdf = geopandas.read_file(raw_data_dir / 'professor.geojson')
 
 gdf=gdf.set_index('section_id')
 

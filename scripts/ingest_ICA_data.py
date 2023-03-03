@@ -89,6 +89,7 @@ DRPEP Interactive User Guide Reference:
 # Import the straight-from-DRPEP/ICA data file
 phrs = pd.read_csv(raw_data_dir / "PROFESSOR_16KV_BH.csv",encoding = 'unicode_escape', engine ='python')
 
+
 # Drop Node IDs that don't follow the convention
 def clean_nodeid(nodeid_str):
     try: 
@@ -117,6 +118,27 @@ print('{} total rows \n'.format(total_rows),
       '{} rows per node'.format(rows_per_node))
 
 phrs.columns=phrs.columns.str.strip().str.replace(' ','_')
+
+# Very cluggy...force float type for important columns
+cols2float = ['Uniform_Generation_Operational_Flexibility_(kW)',
+              'Uniform_Generation_(kW)',
+              'Solar_PV_Operational_Flexibility_(kW)',
+              'Solar_PV_(kW)',
+              'Thermal_(kW)', 
+              'SSV_(kW)',
+              'Voltage_Fluctuation_(kW)',
+              'Protection_(kW)', 'ICA_Operational_Flexibility_(kW)',
+              'Uniform_Load_(kW)', 
+              'Thermal_Load_(kW)', 
+              'Volt_Variation_Load_(kW)',
+              'SSV_Load_(kW)']
+
+for col in cols2float:
+    try:
+        phrs[col] = phrs[col].apply(lambda x: float(x.replace(',','')))
+    except:
+        pass
+
 
 # save to pickle (*.pkl) for easier access
 phrs.to_pickle(int_data_dir / 'Prof_ICA_data.pkl')
