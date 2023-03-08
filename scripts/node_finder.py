@@ -162,7 +162,7 @@ m = poi.explore(color='green',marker_type='marker',
                 name="Step 0: Note Points of Interest")
 
 # Step 1: Show DRPEP Line Segments
-gdf.explore(m=m,name="Step 1: DRPEP Line Sections")
+gdf.explore(m=m,name="Step 1: DRPEP Line Sections",style_kwds=dict(weight=3))
 
 # Step 2: Find Endpoints
 pts.explore(m=m,color='blue',marker_kwds=dict(radius=2),show=False,
