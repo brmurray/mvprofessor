@@ -11,5 +11,6 @@ from pathlib import Path
 
 raw_data_dir = Path('C:/Users/Umberto/Documents/GitHub/mvprofessor/data/raw')
 int_data_dir = Path('C:/Users/Umberto/Documents/GitHub/mvprofessor/data/intermediate')
+maps_dir = Path('C:/Users/Umberto/Documents/GitHub/mvprofessor/data/maps')
 
 
