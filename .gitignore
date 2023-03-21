@@ -152,4 +152,4 @@ cython_debug/
 #.idea/
 
 #
-mvprofessor/config.py
+config.py
