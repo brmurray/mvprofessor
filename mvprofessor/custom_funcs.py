@@ -109,7 +109,7 @@ def make_blobs(gdf_points, buffer_radius):
     return blobs
     
     
-def tree_builder(lines,blobs,startpoint):
+def tree_builder(lines,blobs,startpoint,verbose=False):
     '''
     Tree building algorithm inspired by a classic depth-first search 
     (DFS) tree traversal.
@@ -178,8 +178,9 @@ def tree_builder(lines,blobs,startpoint):
             
             powered_blobs = blobs[blobs['powered']==1]
             unpowered_blobs = blobs[blobs['powered']==0]
-            print('\n ----------------------')
-            print("reinit with blob {}".format(blobs[blobs['powered']==0].iloc[0]['blob_idx']))
+            if verbose:
+                print('\n ----------------------')
+                print("reinit with blob {}".format(blobs[blobs['powered']==0].iloc[0]['blob_idx']))
             reinit_blob = blobs[blobs['powered']==0].iloc[0]['geometry']
             reinit_pt = reinit_blob.representative_point()
             
@@ -249,7 +250,8 @@ def tree_builder(lines,blobs,startpoint):
                 # Note which branches and blobs have been mapped
                 lines.loc[idx,'explored'] = 1
                 blobs.loc[new_blob.index,'powered']=1
-                print("Just Powered: {}".format(new_blob.index[0]))    
+                if verbose:
+                    print("Just Powered: {}".format(new_blob.index[0]))    
     
     
     return G
